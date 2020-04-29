@@ -1,6 +1,8 @@
 'use strict';
 
-const generateDescription = (name, discount, discountSize) => `${name} ${discount*100}% off: -$${discountSize}`;
+const { formatPrice } = require('./utils');
+
+const generateDescription = (name, discount, discountSize) => `${name} ${discount*100}% off: -${formatPrice(discountSize)}`;
 
 const findById = (products, id) => products.find(product => product.id === id);
 

@@ -1,6 +1,7 @@
 'use strict';
 
 const offerService = require('./offer-service');
+const { toCents, formatPrice } = require('./utils');
 
 async function priceBasket({db, date, basket}) {
   const products = await queryProducts({db, basket});
@@ -16,7 +17,11 @@ async function priceBasket({db, date, basket}) {
     total = total - discount;
   }
 
-  return {subTotal, discountDescription, total};
+  return {
+    subTotal: formatPrice(subTotal),
+    discountDescription,
+    total: formatPrice(total)
+  };
 }
 
 async function queryProducts({db, basket}) {
@@ -26,6 +31,7 @@ async function queryProducts({db, basket}) {
 
   products = products.map(product => ({
     ...product,
+    price: toCents(product.price),
     amount: basket.find(item => item.name === product.name).amount,
   }));
 
