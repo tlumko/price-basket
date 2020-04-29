@@ -1,6 +1,6 @@
 'use strict';
 
-const { formatPrice } = require('./utils');
+const { formatPrice } = require('../utils');
 
 const generateDescription = (name, discount, discountSize) => `${name} ${discount*100}% off: -${formatPrice(discountSize)}`;
 
@@ -72,7 +72,7 @@ const offerService = {
   generateDescription: (discountDetails) => {
     return discountDetails.map(detail => {
       return generateDescription(detail.product.name, detail.discount, detail.discountSize);
-    }).flat().join('\n');
+    }).flat().join(',\n ');
   },
 };
 

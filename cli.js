@@ -1,7 +1,7 @@
 'use strict';
 
 const MongoClient = require('mongodb').MongoClient;
-const { priceBasket } = require('./index');
+const { priceBasket } = require('./basket.controller');
 
 (async () => {
   const client = await MongoClient.connect('mongodb://localhost:27017');
@@ -9,11 +9,9 @@ const { priceBasket } = require('./index');
 
   const {date, basket} = parseArgs();
 
-  const {subTotal, discountDescription, total} = await priceBasket({db, date, basket});
+  const response = await priceBasket({db, date, basket});
 
-  console.log(`Subtotal: $${subTotal}`);
-  console.log(discountDescription);
-  console.log(`Total $${total}`);
+  console.log(response);
 
   client.close();
   process.exit(0);

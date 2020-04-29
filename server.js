@@ -6,7 +6,7 @@ const express = require('express');
 const joi = require('joi');
 const bodyParser = require('body-parser');
 
-const { priceBasket } = require('./price-basket.service');
+const { priceBasket } = require('./basket.controller');
 
 const app = express();
 app.use(bodyParser.json())
@@ -28,15 +28,15 @@ app.get('/', async (req, res) => {
     return;
   }
 
-  const {subTotal, discountDescription, total} = await priceBasket({
+  const response = await priceBasket({
     db: app.db,
     date: req.body.date,
     basket: req.body.basket
   });
 
-  console.log({subTotal, discountDescription, total});
+  console.log(response);
 
-  res.json({subTotal, discountDescription, total});
+  res.json(response);
 });
 
 MongoClient.connect('mongodb://localhost:27017')
