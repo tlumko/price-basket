@@ -11,11 +11,11 @@ const offerTypes = {
       },
       calculateDiscount: ({offer, products}) => {
           const product = findById(products, offer.details.productId);
-          return product.amount * product.price * discountSize;
+          return product.amount * product.price * offer.details.discountSize;
       },
       generateDescription: ({offer, products}) => {
         const product = findById(products, offer.details.productId);
-        const discount = product.amount * product.price * discountSize;
+        const discount = product.amount * product.price * offer.details.discountSize;
         return generateDescription(product.name, offer.details.discountSize, discount);
       },
   },
