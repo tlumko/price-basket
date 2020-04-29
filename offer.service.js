@@ -11,14 +11,14 @@ const offerTypes = {
       isFullfilled:  ({offer, products}) => {
         return products.some(product => product.id === offer.details.productId)
       },
-      calculateDiscount: ({offer, products}) => {
-          const product = findById(products, offer.details.productId);
-          return product.amount * product.price * offer.details.discount;
-      },
-      generateDescription: ({offer, products}) => {
+      getDiscountDetails: ({offer, products}) => {
         const product = findById(products, offer.details.productId);
-        const discountSize = product.amount * product.price * offer.details.discount;
-        return generateDescription(product.name, offer.details.discount, discountSize);
+        const discountSize = product.price * offer.details.discount * product.amount;
+        return {
+          product,
+          discountSize,
+          discount: offer.details.discount,
+        }
       },
   },
   package: {
@@ -34,20 +34,23 @@ const offerTypes = {
           return product.amount >= requiredAmount;
         })
       },
-      calculateDiscount: ({offer, products}) => {
+      getDiscountDetails: ({offer, products}) => {
+        const packagesCount = Math.min(...offer.details.map(offerDetail => {
+          const product = findById(products, offerDetail.productId);
+          const requiredAmount = offerDetail.requiredAmount || 1;
+          return Math.floor(product.amount / requiredAmount);          
+        }));
+
         const detailsWithDiscount = offer.details.filter(detail => detail.discount);
-        return detailsWithDiscount.reduce((sum, detail) => {                
-          const product = findById(products, detail.productId);
-          sum += product.price * detail.discount;
-          return sum;
-        }, 0)   
-      },
-      generateDescription: ({offer, products}) => {
-        const detailsWithDiscount = offer.details.filter(detail => detail.discount);
+
         return detailsWithDiscount.map(detail => {
           const product = findById(products, detail.productId);
-          const discountSize = product.price * detail.discount;
-          return generateDescription(product.name, detail.discount, discountSize);
+          const discountSize = product.price * detail.discount * packagesCount;
+          return {
+            product,
+            discountSize,
+            discount: detail.discount,
+          }
         })
       },
   }
@@ -55,17 +58,22 @@ const offerTypes = {
 
 const offerService = {
   isFullfilled: ({offer, products}) => offerTypes[offer.type].isFullfilled({offer, products}),
-  generateDescription: ({offers, products}) => {
+  getDiscountDetails: ({offers, products}) => {
     return offers.map(offer => {
-      return offerTypes[offer.type].generateDescription({offer, products})
-    }).flat().join('\n');
+      return offerTypes[offer.type].getDiscountDetails({offer, products});
+    }).flat();
   },
-  calculateDiscount: ({offers, products}) => {
-    return offers.reduce((sum, offer) => {
-      sum += offerTypes[offer.type].calculateDiscount({offer, products});
+  calculateDiscount: (discountDetails) => {
+    return discountDetails.reduce((sum, detail) => {
+      sum += detail.discountSize;
       return sum;
     }, 0);
-  }
+  },
+  generateDescription: (discountDetails) => {
+    return discountDetails.map(detail => {
+      return generateDescription(detail.product.name, detail.discount, detail.discountSize);
+    }).flat().join('\n');
+  },
 };
 
 module.exports = offerService;

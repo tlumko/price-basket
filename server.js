@@ -6,7 +6,7 @@ const express = require('express');
 const joi = require('joi');
 const bodyParser = require('body-parser');
 
-const { priceBasket } = require('./index');
+const { priceBasket } = require('./price-basket.service');
 
 const app = express();
 app.use(bodyParser.json())

@@ -1,6 +1,6 @@
 'use strict';
 
-const offerService = require('./offer-service');
+const offerService = require('./offer.service');
 const { toCents, formatPrice } = require('./utils');
 
 async function priceBasket({db, date, basket}) {
@@ -10,8 +10,10 @@ async function priceBasket({db, date, basket}) {
   const offers = activeOffers.filter(offer => offerService.isFullfilled({offer, products}));
 
   const subTotal = calculateSubTotal(products);
-  const discount = offerService.calculateDiscount({offers, products});
-  const discountDescription = offerService.generateDescription({offers, products}) || '(no offers available)';
+
+  const discountDetails = offerService.getDiscountDetails({offers, products});
+  const discount = offerService.calculateDiscount(discountDetails);
+  const discountDescription = offerService.generateDescription(discountDetails) || '(no offers available)';
   let total = subTotal;
   if (discount) {
     total = total - discount;
