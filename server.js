@@ -34,6 +34,8 @@ app.get('/', async (req, res) => {
     basket: req.body.basket
   });
 
+  console.log({subTotal, discountDescription, total});
+
   res.json({subTotal, discountDescription, total});
 });
 

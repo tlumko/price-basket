@@ -1,6 +1,6 @@
 'use strict';
 
-const generateDescription = (name, discountSize, discount) => `${name} ${discountSize*100}% off: -$${discount}`;
+const generateDescription = (name, discount, discountSize) => `${name} ${discount*100}% off: -$${discountSize}`;
 
 const findById = (products, id) => products.find(product => product.id === id);
 
@@ -11,12 +11,12 @@ const offerTypes = {
       },
       calculateDiscount: ({offer, products}) => {
           const product = findById(products, offer.details.productId);
-          return product.amount * product.price * offer.details.discountSize;
+          return product.amount * product.price * offer.details.discount;
       },
       generateDescription: ({offer, products}) => {
         const product = findById(products, offer.details.productId);
-        const discount = product.amount * product.price * offer.details.discountSize;
-        return generateDescription(product.name, offer.details.discountSize, discount);
+        const discountSize = product.amount * product.price * offer.details.discount;
+        return generateDescription(product.name, offer.details.discount, discountSize);
       },
   },
   package: {
@@ -33,19 +33,19 @@ const offerTypes = {
         })
       },
       calculateDiscount: ({offer, products}) => {
-        const detailsWithDiscount = offer.details.filter(detail => detail.discountSize);
+        const detailsWithDiscount = offer.details.filter(detail => detail.discount);
         return detailsWithDiscount.reduce((sum, detail) => {                
           const product = findById(products, detail.productId);
-          sum += product.price * detail.discountSize;
+          sum += product.price * detail.discount;
           return sum;
         }, 0)   
       },
       generateDescription: ({offer, products}) => {
-        const detailsWithDiscount = offer.details.filter(detail => detail.discountSize);
+        const detailsWithDiscount = offer.details.filter(detail => detail.discount);
         return detailsWithDiscount.map(detail => {
           const product = findById(products, detail.productId);
-          const discount = product.price * detail.discountSize;
-          return generateDescription(product.name, detail.discountSize, discount);
+          const discountSize = product.price * detail.discount;
+          return generateDescription(product.name, detail.discount, discountSize);
         })
       },
   }

@@ -34,7 +34,7 @@ const MongoClient = require('mongodb').MongoClient;
       type: 'discount',
       details: {
           productId: 1,
-          discountSize: 0.1
+          discount: 0.1
       },
       startDate: '',
       endDate: ''
@@ -48,7 +48,7 @@ const MongoClient = require('mongodb').MongoClient;
           },
           {
               productId: 3,
-              discountSize: 0.5,
+              discount: 0.5,
           },
       ],
       startDate: '',
